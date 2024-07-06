@@ -28,7 +28,11 @@
   - [Sealed Classes](#sealed-classes)
   - [Object Keyword](#object-keyword)
 
-- [Functional]()
+- [Functional](#functions)
+  - [Higher-Order Functions](#higher-order-functions)
+    - [Inline, NoInLine, CrossLine](#inline-noinline-crossline)
+  - [Lambda Functions](#lambda-functions)
+  - [Extension Functions and Properties](#extension-functions-and-properties)
 - [Collections]()
 - [Scope Functions](#scope-functions)
   - [let](#let)
@@ -98,31 +102,31 @@
       \```
       
     - Secondary Constructor  
-        - It is defined within class body and prefix with constructor keyword
-          - It allow different ways to instantiate the class.
-          - Useful for additional logic or default values during object creation.
-            - ``` Secondary Constructor Example
-              ```kotlin
-               class Person {
-                    var name: String
-                    var age: Int
-                    var email: String
+      - It is defined within class body and prefix with constructor keyword
+      - It allow different ways to instantiate the class.
+      - Useful for additional logic or default values during object creation.
+      - ``` Secondary Constructor Example
+         ```kotlin
+            class Person {
+              var name: String
+              var age: Int
+              var email: String
       
-                    // Primary constructor
-                    constructor(name: String, age: Int) {
-                        this.name = name
-                        this.age = age
-                        this.email = ""
-                    }
+              // Primary constructor
+              constructor(name: String, age: Int) {
+               this.name = name
+               this.age = age
+               this.email = ""
+               }
       
-                    // Secondary constructor
-                    constructor(name: String, age: Int, email: String) : this(name, age) {
-                        this.email = email
-                    }
+               // Secondary constructor
+               constructor(name: String, age: Int, email: String) : this(name, age) {
+                 this.email = email
+                }
       
-                    fun displayInfo() {
-                        println("Name: $name, Age: $age, Email: $email")
-                    }
+                fun displayInfo() {
+                   println("Name: $name, Age: $age, Email: $email")
+                 }
               }
 
               fun main() {
@@ -133,7 +137,7 @@
                 person2.displayInfo() // Output: Name: Jane, Age: 25, Email: jane.doe@example.com
               }
               
-              \```
+              \```   
 
 
 
@@ -237,25 +241,198 @@
 - useful for implementing design patterns like the Singleton pattern or controlling the creation of instances through factory methods.
 - Companion object Can access private constructors and private methods of the class.
 
+## Functions
+### Higher-Order-Functions
+- A higher-order function is a function that takes another function as parameter and/or returns a function. 
+- ```kotlin
+   //Function as Parameter
+  fun main() {
+  val sum = calculate(5,6, ::sum)
+  val subtraction = calculate(10,5,{a,b -> a-b})
+  val multiply = calculate(3,5){a,b -> a*b}
+  println("sum is ${sum} - Multiply ${multiply}")
+  }
+  
+  fun calculate(x: Int, y :Int, operation:(Int, Int) -> Int) : Int{
+      return operation(x, y)
+  }
+   
+  fun sum(x:Int, y:Int) = x + y
+   
+  //Returning Function
+
+  fun operation() :(Int) -> Int{
+     return ::sum
+  }
+  
+  fun sum(x: Int) = x * x
+
+  void main(){
+   val func = operation()
+   println(func(2))
+   }
+  \```
+#### Inline, NoInLine, CrossLine
+### InLine
+- inline functions are functions marked with the inline keyword
+- This allows the compiler to copy the function body and paste it at the call site, 
+  which can reduce the overhead of function calls and improve performance, especially when dealing with higher-order functions. 
+-  ```
+          inline fun performOperation(action: () -> Unit) {
+            println("Before action")
+            action()
+            println("After action")
+            }
+          
+            fun main() {
+              performOperation {
+              println("Action executed")
+            }
+          }
+          \```
+   
+### NoInline
+- When you want to prevent specific lambda parameters from being inlined.
+- When you need to pass the lambda to another function or store it in a variable.
+-  ```
+   inline fun processLambdas(inlineLambda: () -> Unit, noinline nonInlineLambda: () -> Unit) {
+    println("Before inline lambda")
+    inlineLambda()
+    println("After inline lambda")
+    println("Before noinline lambda")
+    nonInlineLambda()
+    println("After noinline lambda")
+    }
+
+    fun main() {
+    processLambdas(
+    inlineLambda = { println("Inline lambda executed") },
+    nonInlineLambda = { println("Noinline lambda executed") }
+    )
+   }
+    \```
+
+### Crossinline
+- ensure that the lambda passed to an inline function cannot use return to exit the enclosing function.
+  -   ```
+      inline fun crossinlineExample(crossinline action: () -> Unit) {
+      println("Before action")
+      val runnable = Runnable {
+      action()  // This lambda cannot use return to exit crossinlineExample
+      }
+      runnable.run()
+      println("After action")
+      }
+
+      fun main() {
+      crossinlineExample {
+      println("Action executed")
+        // return // Uncommenting this will cause a compilation error
+      }
+      }
+      \```
 
 
+### Lambda Functions 
+- simple way to create functions ad-hoc.
+- val upperCase5: (String) -> String = { it.uppercase() }
+### Extension Functions and Properties
+- Kotlin lets you add new members to any class with the extensions mechanism
+  - there are two types of extensions: extension functions and extension properties.
+    ```
+      data class Item(val name: String, val price: Float)                                         // 1  
 
+      data class Order(val items: Collection<Item>)
+
+      fun Order.maxPricedItemValue(): Float = this.items.maxByOrNull { it.price }?.price ?: 0F    // 2  
+      fun Order.maxPricedItemName() = this.items.maxByOrNull { it.price }?.name ?: "NO_PRODUCTS"
+
+      val Order.commaDelimitedItemNames: String                                                   // 3
+           get() = items.map { it.name }.joinToString()
+  
+  
+     fun main() {
+
+      val order = Order(listOf(Item("Bread", 25.0F), Item("Wine", 29.0F), Item("Water", 12.0F)))
+    
+      println("Max priced item name: ${order.maxPricedItemName()}")                           // 4
+      println("Max priced item value: ${order.maxPricedItemValue()}")
+      println("Items: ${order.commaDelimitedItemNames}")                                      // 5
+
+    }
+    \```
 
 
 ## Scope Functions
 ### let 
 - Let can be used for scoping and null-checks.
 - let executes the given block of code and returns the result of its last expression.
+- uses it or customName to access the object inside scope
+  - ```
+    str?.let {                         // 4
+    print("\t")
+    customPrint(it)
+    println()
+    }
+     \```
+    
 ### run
-- 
+- Similar to let
+- Executes a code block and return the result 
+- uses this or customName to access the object inside scope
+- Run is used to perform computations and return the final result.
+- Run can be use with or without object - syntax :  object.run { ... } or run { ... }
+   ```kotlin
+    val result = "Kotlin".run {
+    length + 5
+   }
+    println(result)
+    // Output: 11
+  \```
+
 ### with
 - With this object perform required operation
 - It takes not null object
-### apply
+- with is a non-extension function that can access members of its argument
+- used to operate on an object without referring to its name. 
+- It is useful for calling multiple methods on the same object.
+   
+  ```
+  val builder = StringBuilder()
+  with(builder) {
+  append("Hello, ")
+  append("Kotlin!")
+  }
+  println(builder.toString())
+  // Output: Hello, Kotlin!
+
+  \``
+### apply(this)
 - Let me apply few more changes to this existing object 
-- Modify the existing copy ?
+- It is used to configure  or initialize an object.
+- It returns the object itself.
+-  ```
+    val person = Person().apply {
+    name = "John"
+    age = 30
+    }
+    println(person.name)
+    // Output: John
+
+
+    \```
+
 ### also
-- Along with these operation , perform these operation also
-- It doesn't modify the object on which also was used 
-- 
+- also is used to perform additional operations on an object. 
+- It returns the object itself. 
+- It is useful for debugging or logging.
+  ```
+    val numbers = mutableListOf(1, 2, 3)
+     numbers.also {
+     it.add(4)
+     println("List after addition: $it")
+    }
+  // Output: List after addition: [1, 2, 3, 4]
+
+      \```
 
