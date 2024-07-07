@@ -142,7 +142,119 @@
 
 
 ### Enum Classes
+- You have fixed set of options that represents distinct value. or (Restricted set of possible value like NEWS, Play Pause Stop Close Resume)
+- Each option doesn't required any additional behaviour and properties.
+- You need type safety and exhaustive handling of options 
 ### Sealed Classes
+- restrict the use of inheritance
+- all subclasses must be in the same package
+- Close type hierarchy with finite set number of subclasses.
+- Uses an instance of sealed class as an argument in 'when' expression & else block is not necessary. 
+- Use sealed classes whenever you have a known set of subclasses that you want to represent and handle in a type-safe manner.
+- My Notes
+- You want to have close type hierarchy with a finite set of subclasses 
+- Each subclass can have its own property and behaviour
+- You need to handle all possible subclass.
+ 
+   ```
+  sealed class NetworkResult<out T> {
+  data class Success<out T>(val data: T) : NetworkResult<T>()
+  data class Error(val exception: Throwable) : NetworkResult<Nothing>()
+  object Loading : NetworkResult<Nothing>()
+  }
+  
+  sealed class UiState {
+    object Loading : UiState()
+    data class Success(val data: List<Item>) : UiState()
+    data class Error(val message: String) : UiState()
+  }
+  sealed class NavigationEvent {
+    data class ToDetail(val itemId: String) : NavigationEvent()
+    object ToSettings : NavigationEvent()
+  } 
+  
+  sealed class ValidationResult {
+    object Valid : ValidationResult()
+    data class Invalid(val errors: List<String>) : ValidationResult()
+  }
+
+    \```
+  
+
+### InVariant(<T>) , Contravariant(<in T>) & Covariant(<out T>)
+
+#### InVariant(<T>)
+- When you declare a generic type as <T>, it is invariant.
+- This means you cannot substitute it with its subtypes or supertypes. The type must match exactly.
+- The type must match exactly. Neither supertypes nor subtypes can be substituted.
+- When you need to both read and write values of the generic type.
+- A class that can both set and get values of type T.
+  ```
+  class Box<T>(var item: T) {
+    fun setItem(value: T) {
+        item = value
+    }
+
+    fun getItem(): T {
+        return item
+    }
+   } 
+
+     fun main() {
+    val intBox: Box<Int> = Box(42)
+     val numberBox: Box<Number> = Box(3.14)
+
+    // This will not compile because Box<Int> is not a Box<Number>
+    // val box: Box<Number> = intBox
+    }
+  
+#### Contravariant(<in T>)
+- When you declare a generic type as <in T>, it is contravariant.
+- This means you can substitute it with its supertypes. The type can be used for input (consumption) but not for output (production).
+  ```
+  class Box<in T> {
+    private var item: T? = null
+
+    fun setItem(value: T) {
+        item = value
+    }
+
+    // You cannot have a method that returns T
+    // fun getItem(): T {
+    //     return item
+    // }
+   }
+
+   fun main() {
+     val numberBox: Box<Number> = Box()
+     val intBox: Box<Int> = Box()
+
+    // This is allowed because Box<in T> is contravariant
+    val box: Box<Number> = intBox
+   }
+  
+#### <out T> - Covariant
+- When you declare a generic type as <out T>, it is covariant. This means you can substitute it with its subtypes.
+- The type can be used for output (production) but not for input (consumption).
+   ```
+   class Box<out T>(val item: T)
+
+  fun main() {
+   val intBox: Box<Int> = Box(42)
+   val numberBox: Box<Number> = Box(3.14)
+
+    // This is allowed because Box<out T> is covariant
+    val box: Box<Number> = intBox
+
+    // You cannot set a new item because Box<out T> is covariant
+    // box.setItem(42)
+    println(box.item)
+  }
+
+
+
+
+
 ### Object Keyword
 #### Class and Object 
 - a class is a blueprint, and an object is an instance of a class
