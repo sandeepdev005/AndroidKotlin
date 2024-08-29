@@ -40,8 +40,8 @@
   - [with](#with)
   - [apply](#apply)
   - [also](#also)
-
-
+- [Android Concepts](#android-concepts)
+  - [Proguard and R8](#proguard-and-r8)
 
 ## Special Classes
 
@@ -474,7 +474,6 @@
     }
     \```
 
-
 ## Scope Functions
 ### let 
 - Let can be used for scoping and null-checks.
@@ -548,3 +547,27 @@
 
       \```
 
+
+
+## Android Concepts
+### proguard and R8
+- ProGuard and R8 are tools used in Android development to optimize and obfuscate code, making it harder to reverse-engineer.
+- ProGuard has been the traditional choice, R8 is the newer, default code shrinker and obfuscator
+#### Proguard 
+- ProGuard is hrinker, optimizer, obfuscator
+- It removes unused code, optimizes bytecode, obfuscates the names of classes, fields, and methods, and removes debugging information.
+
+#### R8
+- R8 combines shrinking, desugaring, and dexing into one step, making it more efficient and faster.
+- Enabling R8 : R8 is enabled by default in Android Studio, so you don't need to do anything special to use it. 
+- The minifyEnabled flag will use R8 for code shrinking and obfuscation.
+####  Difference between Proguard and R8
+- Performance: R8 generally offers better performance and faster build times compared to ProGuard because it combines multiple steps (shrinking, desugaring, dexing) into a single step. 
+- Optimization: R8 performs more advanced optimizations compared to ProGuard. 
+- Configuration: R8 uses the same ProGuard rules file, so migrating is straightforward.
+#### Shrinking
+- Removes unused code and resources to reduce APK size. Tools like ProGuard and R8 handle this.
+#### Desugaring
+- Transforms newer language features into older, more compatible forms for backward compatibility. This is handled by the Android Gradle plugin.
+#### Dexing
+- Converts Java bytecode into Dalvik bytecode (.dex files) for execution on Android devices. This is handled by tools like dx and d8.

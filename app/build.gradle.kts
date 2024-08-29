@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.security:security-crypto-ktx:1.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -91,4 +92,21 @@ dependencies {
 
     // Network connectivity
     implementation("com.github.ashishb:network-utils:1.0.2")
+
+    //ViewmOdel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07")
+
+    //This dependency is for : to covnert live data object to observe as state in compose
+    //counter.observeAsState(0)
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+    implementation("androidx.compose.material:material:1.0.5")
+
+    implementation("androidx.security:security-crypto:1.0.0-rc02")
+
+
+    //Room
+    implementation("net.zetetic:android-database-sqlcipher:4.4.3")
+    implementation("androidx.room:room-runtime:2.3.0")
+    annotationProcessor("androidx.room:room-compiler:2.3.0")
+
 }
